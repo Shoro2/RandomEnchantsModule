@@ -6,20 +6,10 @@
 #include "Configuration/Config.h"
 #include "Chat.h"
 
-enum Misc
-{
-    //todo add to config:
-    ILVL_TIER_5 = 250,
-    ILVL_TIER_4 = 213,
-    ILVL_TIER_3 = 200,
-    ILVL_TIER_2 = 180,
-    ILVL_TIER_1 = 150,
 
-    CHANCE_FIRST    = 50,
-    CHANCE_SECOND   = 50,
-    CHANCE_THIRD    = 50
-};
-
+uint32 IlvlT5, IlvlT4, IlvlT3, IlvlT2, IlvlT1;
+double Chance1, Chance2, Chance3;
+bool conf_AnnounceLogin, conf_OnLoot, conf_OnCreate, conf_OnQuest;
 
 class RandomEnchantsPlayer : public PlayerScript{
 public:
@@ -27,22 +17,22 @@ public:
     RandomEnchantsPlayer() : PlayerScript("RandomEnchantsPlayer") { }
 
     void OnLogin(Player* player) override {
-		if (sConfigMgr->GetOption<bool>("RandomEnchants.AnnounceOnLogin", true))
+		if (conf_AnnounceLogin)
             ChatHandler(player->GetSession()).SendSysMessage(sConfigMgr->GetOption<std::string>("RandomEnchants.OnLoginMessage", "This server is running a RandomEnchants Module.").c_str());
     }
 	void OnLootItem(Player* player, Item* item, uint32 /*count*/, ObjectGuid /*lootguid*/) override
 	{
-		if (sConfigMgr->GetOption<bool>("RandomEnchants.OnLoot", true))
+		if (conf_OnLoot)
 			RollPossibleEnchant(player, item);
 	}
 	void OnCreateItem(Player* player, Item* item, uint32 /*count*/) override
 	{
-		if (sConfigMgr->GetOption<bool>("RandomEnchants.OnCreate", true))
+		if (conf_OnCreate)
 			RollPossibleEnchant(player, item);
 	}
 	void OnQuestRewardItem(Player* player, Item* item, uint32 /*count*/) override
 	{
-		if(sConfigMgr->GetOption<bool>("RandomEnchants.OnQuestReward", true))
+		if(conf_OnQuest)
 			RollPossibleEnchant(player, item);
 	}
 	void RollPossibleEnchant(Player* player, Item* item)
@@ -60,17 +50,17 @@ public:
 		int slotRand[3] = { -1, -1, -1 };
 		uint32 slotEnch[3] = { 0, 1, 5 };
 		double roll1 = rand_chance();
-		if (roll1 >= 100 - CHANCE_FIRST)
+		if (roll1 >= 100.0 - Chance1)
 			slotRand[0] = getRandEnchantment(item);
 		if (slotRand[0] != -1)
 		{
 			double roll2 = rand_chance();
-			if (roll2 >= CHANCE_SECOND)
+			if (roll2 >= 100 - Chance2)
 				slotRand[1] = getRandEnchantment(item);
 			if (slotRand[1] != -1)
 			{
 				double roll3 = rand_chance();
-				if (roll3 >= CHANCE_THIRD)
+				if (roll3 >= 100 - Chance3)
 					slotRand[2] = getRandEnchantment(item);
 			}
 		}
@@ -113,19 +103,19 @@ public:
         uint32 Ilvl = item->GetTemplate()->ItemLevel;
 		int rarityRoll = -1;
         int Quality;
-        if (Ilvl >= ILVL_TIER_5) {
+        if (Ilvl >= IlvlT5) {
             Quality = 5;
         }
-        else if (Ilvl >= ILVL_TIER_4) {
+        else if (Ilvl >= IlvlT4) {
             Quality = 4;
         }
-        else if (Ilvl >= ILVL_TIER_3) {
+        else if (Ilvl >= IlvlT3) {
             Quality = 3;
         }
-        else if (Ilvl >= ILVL_TIER_2) {
+        else if (Ilvl >= IlvlT2) {
             Quality = 2;
         }
-        else if (Ilvl >= ILVL_TIER_1) {
+        else if (Ilvl >= IlvlT1) {
             Quality = 1;
         }
         else {
@@ -173,7 +163,42 @@ public:
 	}
 };
 
+class REConfig : public WorldScript
+{
+public:
+    REConfig() : WorldScript("REConfig") {}
+
+    void OnBeforeConfigLoad(bool reload) override
+    {
+        if (!reload) {
+            // Load Configuration Settings
+            SetInitialWorldSettings();
+        }
+    }
+
+    void SetInitialWorldSettings()
+    {
+        conf_AnnounceLogin = sConfigMgr->GetOption<bool>("RandomEnchants.AnnounceOnLogin", true);
+        conf_OnLoot = sConfigMgr->GetOption<bool>("RandomEnchants.OnLoot", true);
+        conf_OnCreate = sConfigMgr->GetOption<bool>("RandomEnchants.OnCreate", true);
+        conf_OnQuest = sConfigMgr->GetOption<bool>("RandomEnchants.OnQuestReward", true);
+
+        IlvlT5 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier5", 250);
+        IlvlT4 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier4", 213);
+        IlvlT3 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier3", 200);
+        IlvlT2 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier2", 180);
+        IlvlT1 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier1", 150);
+
+        Chance1 = sConfigMgr->GetOption<double>("RandomEnchants.chancere1", 50.00);
+        Chance1 = sConfigMgr->GetOption<double>("RandomEnchants.chancere2", 50.00);
+        Chance1 = sConfigMgr->GetOption<double>("RandomEnchants.chancere3", 50.00);
+    }
+
+
+};
+
 void AddRandomEnchantsScripts() {
     new RandomEnchantsPlayer();
+    new REConfig();
 }
 

@@ -40,3 +40,17 @@ RandomEnchants.OnCreate=1
 
 RandomEnchants.OnQuestReward=1
 
+
+# Itemlevel required on the item to roll the tier
+
+RandomEnchants.ilvltier5 = 250
+RandomEnchants.ilvltier4 = 213
+RandomEnchants.ilvltier3 = 200
+RandomEnchants.ilvltier2 = 180
+RandomEnchants.ilvltier1 = 150
+
+# chances of re to be applied on a item
+
+RandomEnchants.chancere1 = 50.00
+RandomEnchants.chancere2 = 50.00
+RandomEnchants.chancere3 = 50.00
