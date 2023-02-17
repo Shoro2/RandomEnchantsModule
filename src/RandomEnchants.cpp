@@ -6,6 +6,21 @@
 #include "Configuration/Config.h"
 #include "Chat.h"
 
+enum Misc
+{
+    //todo add to config:
+    ILVL_TIER_5 = 250,
+    ILVL_TIER_4 = 213,
+    ILVL_TIER_3 = 200,
+    ILVL_TIER_2 = 180,
+    ILVL_TIER_1 = 150,
+
+    CHANCE_FIRST    = 50,
+    CHANCE_SECOND   = 50,
+    CHANCE_THIRD    = 50
+};
+
+
 class RandomEnchantsPlayer : public PlayerScript{
 public:
 
@@ -45,17 +60,17 @@ public:
 		int slotRand[3] = { -1, -1, -1 };
 		uint32 slotEnch[3] = { 0, 1, 5 };
 		double roll1 = rand_chance();
-		if (roll1 >= 50.0)
+		if (roll1 >= 100 - CHANCE_FIRST)
 			slotRand[0] = getRandEnchantment(item);
 		if (slotRand[0] != -1)
 		{
 			double roll2 = rand_chance();
-			if (roll2 >= 50.0)
+			if (roll2 >= CHANCE_SECOND)
 				slotRand[1] = getRandEnchantment(item);
 			if (slotRand[1] != -1)
 			{
 				double roll3 = rand_chance();
-				if (roll3 >= 50.0)
+				if (roll3 >= CHANCE_THIRD)
 					slotRand[2] = getRandEnchantment(item);
 			}
 		}
@@ -94,8 +109,30 @@ public:
 		}
 		if (ClassQueryString == "")
 			return -1;
-		uint32 Quality = item->GetTemplate()->Quality;
+
+        uint32 Ilvl = item->GetTemplate()->ItemLevel;
 		int rarityRoll = -1;
+        int Quality;
+        if (Ilvl >= ILVL_TIER_5) {
+            Quality = 5;
+        }
+        else if (Ilvl >= ILVL_TIER_4) {
+            Quality = 4;
+        }
+        else if (Ilvl >= ILVL_TIER_3) {
+            Quality = 3;
+        }
+        else if (Ilvl >= ILVL_TIER_2) {
+            Quality = 2;
+        }
+        else if (Ilvl >= ILVL_TIER_1) {
+            Quality = 1;
+        }
+        else {
+            Quality = 0;
+        }
+
+
 		switch (Quality)
 		{
 		case 0://grey
