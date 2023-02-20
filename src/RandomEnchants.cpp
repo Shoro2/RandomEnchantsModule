@@ -7,8 +7,8 @@
 #include "Chat.h"
 
 
-uint32 IlvlT5, IlvlT4, IlvlT3, IlvlT2, IlvlT1;
-double Chance1, Chance2, Chance3;
+uint32 conf_IlvlT5, conf_IlvlT4, conf_IlvlT3, conf_IlvlT2, conf_IlvlT1;
+double conf_Chance1, conf_Chance2, conf_Chance3;
 bool conf_AnnounceLogin, conf_OnLoot, conf_OnCreate, conf_OnQuest;
 
 class RandomEnchantsPlayer : public PlayerScript{
@@ -50,17 +50,17 @@ public:
 		int slotRand[3] = { -1, -1, -1 };
 		uint32 slotEnch[3] = { 0, 1, 5 };
 		double roll1 = rand_chance();
-		if (roll1 >= 100.0 - Chance1)
+		if (roll1 >= 100.0 - conf_Chance1)
 			slotRand[0] = getRandEnchantment(item);
 		if (slotRand[0] != -1)
 		{
 			double roll2 = rand_chance();
-			if (roll2 >= 100 - Chance2)
+			if (roll2 >= 100 - conf_Chance2)
 				slotRand[1] = getRandEnchantment(item);
 			if (slotRand[1] != -1)
 			{
 				double roll3 = rand_chance();
-				if (roll3 >= 100 - Chance3)
+				if (roll3 >= 100 - conf_Chance3)
 					slotRand[2] = getRandEnchantment(item);
 			}
 		}
@@ -103,19 +103,19 @@ public:
         uint32 Ilvl = item->GetTemplate()->ItemLevel;
 		int rarityRoll = -1;
         int Quality;
-        if (Ilvl >= IlvlT5) {
+        if (Ilvl >= conf_IlvlT5) {
             Quality = 5;
         }
-        else if (Ilvl >= IlvlT4) {
+        else if (Ilvl >= conf_IlvlT4) {
             Quality = 4;
         }
-        else if (Ilvl >= IlvlT3) {
+        else if (Ilvl >= conf_IlvlT3) {
             Quality = 3;
         }
-        else if (Ilvl >= IlvlT2) {
+        else if (Ilvl >= conf_IlvlT2) {
             Quality = 2;
         }
-        else if (Ilvl >= IlvlT1) {
+        else if (Ilvl >= conf_IlvlT1) {
             Quality = 1;
         }
         else {
@@ -183,15 +183,15 @@ public:
         conf_OnCreate = sConfigMgr->GetOption<bool>("RandomEnchants.OnCreate", true);
         conf_OnQuest = sConfigMgr->GetOption<bool>("RandomEnchants.OnQuestReward", true);
 
-        IlvlT5 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier5", 250);
-        IlvlT4 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier4", 213);
-        IlvlT3 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier3", 200);
-        IlvlT2 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier2", 180);
-        IlvlT1 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier1", 150);
+        conf_IlvlT5 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier5", 250);
+        conf_IlvlT4 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier4", 213);
+        conf_IlvlT3 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier3", 200);
+        conf_IlvlT2 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier2", 180);
+        conf_IlvlT1 = sConfigMgr->GetOption<uint32>("RandomEnchants.ilvltier1", 150);
 
-        Chance1 = sConfigMgr->GetOption<double>("RandomEnchants.chancere1", 50.00);
-        Chance1 = sConfigMgr->GetOption<double>("RandomEnchants.chancere2", 50.00);
-        Chance1 = sConfigMgr->GetOption<double>("RandomEnchants.chancere3", 50.00);
+        conf_Chance1 = sConfigMgr->GetOption<float>("RandomEnchants.chancere1", 50.00);
+        conf_Chance1 = sConfigMgr->GetOption<float>("RandomEnchants.chancere2", 50.00);
+        conf_Chance1 = sConfigMgr->GetOption<float>("RandomEnchants.chancere3", 50.00);
     }
 
 
